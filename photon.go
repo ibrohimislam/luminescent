@@ -1,4 +1,4 @@
-package amaryllis
+package luminescent
 
 type Photon struct {
 	Message  string

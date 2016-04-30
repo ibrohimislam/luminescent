@@ -1,4 +1,4 @@
-package amaryllis
+package luminescent
 
 import (
 	"math/rand"

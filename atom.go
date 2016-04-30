@@ -1,6 +1,6 @@
 // http://tools.ietf.org/html/rfc6455
 
-package amaryllis
+package luminescent
 
 import (
 	"log"
@@ -10,14 +10,14 @@ import (
 	"os"
 )
 
-type WebsocketInteractor interface {
+type SocketInteractor interface {
 	Handshake(conn net.Conn, data string)
 	Decapsulate(buf []byte) string
 	Encapsulate(message string) []byte
 }
 
 type Atom struct {
-	Interactor WebsocketInteractor
+	Interactor SocketInteractor
 	Proton     Proton
 }
 

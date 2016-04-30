@@ -1,4 +1,4 @@
-package amaryllis
+package luminescent
 
 import (
 	"net"
@@ -14,7 +14,7 @@ import (
  */
 
 type Electron struct {
-	Interactor    WebsocketInteractor
+	Interactor    SocketInteractor
 	Conn          net.Conn
 	Id            int
 	ServerChannel chan<- *Photon
