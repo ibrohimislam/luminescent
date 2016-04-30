@@ -1,12 +1,12 @@
 package main
 
-import "github.com/ibrohimislam/amaryllis"
+import "github.com/ibrohimislam/luminescent"
 
 func main() {
 
-	coulomb := amaryllis.Coulomb{}
+	coulomb := luminescent.Coulomb{}
 
-	atom := amaryllis.Atom{coulomb, amaryllis.Proton{}}
+	atom := luminescent.Atom{coulomb, luminescent.Proton{}}
 
 	atom.Run()
 }
