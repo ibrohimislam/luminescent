@@ -1,9 +1,11 @@
 package luminescent
 
 import (
+	"io"
+	"log"
 	"net"
-
-	"regexp"
+	"strconv"
+	"time"
 )
 
 /**
@@ -18,7 +20,6 @@ type Electron struct {
 	Conn          net.Conn
 	Id            int
 	ServerChannel chan<- *Photon
-	RoomChannel   chan<- *Photon
 	State         int
 }
 
@@ -27,42 +28,30 @@ func (this *Electron) handleClient() {
 	defer this.Conn.Close()
 
 	var buf [512]byte
-	for {
+	for this.State >= 0 {
 
+		this.Conn.SetReadDeadline(time.Now().Add(1e9))
 		n, err := this.Conn.Read(buf[0:])
-		if err != nil {
-			return
-		}
 
-		data := string(buf[0:n])
-		first, _ := regexp.MatchString("^GET", data)
+		if nil != err {
 
-		if first {
-
-			this.Interactor.Handshake(this.Conn, data)
-
-		} else {
-
-			if buf[0] == 129 {
-
-				message := this.Interactor.Decapsulate(buf[0:n])
-				photon := *CreatePhoton(message, this)
-
-				if this.RoomChannel != nil {
-					this.RoomChannel <- &photon
-				} else {
-					this.ServerChannel <- &photon
-				}
-
-			} else if buf[0] == 136 {
-
+			if opErr, ok := err.(*net.OpError); ok && opErr.Timeout() {
+				continue
+			} else if io.EOF == err {
+				this.end()
 				return
-
 			}
 
+			log.Println(err.Error())
 		}
+
+		message := this.Interactor.Decapsulate(buf[0:n])
+		photon := *CreatePhoton(message, this)
+
+		this.ServerChannel <- &photon
 	}
 
+	log.Println("User #" + strconv.Itoa(this.Id) + " leave.")
 }
 
 func (this *Electron) ChangeState(state int) {
@@ -73,5 +62,12 @@ func (this *Electron) Emit(message string) {
 
 	buf := this.Interactor.Encapsulate(message)
 	this.Conn.Write(buf)
+
+}
+
+func (this *Electron) end() {
+
+	this.Conn.Close()
+	log.Println("User #" + strconv.Itoa(this.Id) + " disconnected.")
 
 }

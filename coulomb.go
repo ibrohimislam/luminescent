@@ -13,5 +13,5 @@ func (_ Coulomb) Decapsulate(buf []byte) string {
 }
 
 func (_ Coulomb) Encapsulate(message string) []byte {
-	return byte[](message)
+	return []byte(message)
 }

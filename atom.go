@@ -21,20 +21,18 @@ type Atom struct {
 	Proton     Proton
 }
 
-func (this *Atom) Run() {
+func (this *Atom) Run(port int) {
 	var serverChannel chan *Photon = make(chan *Photon)
 	this.Proton = *CreateProton(serverChannel)
 	go this.Proton.serverRoutine()
 
-	logger := log.New(os.Stderr, "", 0)
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", ":"+strconv.Itoa(port))
 
-	service := ":8080"
-	tcpAddr, err := net.ResolveTCPAddr("tcp4", service)
 	checkError(err)
 	listener, err := net.ListenTCP("tcp", tcpAddr)
 	checkError(err)
 
-	logger.Print("Listen on " + tcpAddr.String())
+	log.Println("Listen on " + tcpAddr.String())
 
 	clientCount := 0
 
@@ -46,8 +44,8 @@ func (this *Atom) Run() {
 		}
 
 		clientCount += 1
-		logger.Print("User #" + strconv.Itoa(clientCount) + " connected.")
-		electron := &Electron{this.Interactor, conn, clientCount, serverChannel, nil, 0}
+		log.Println("User #" + strconv.Itoa(clientCount) + " connected.")
+		electron := &Electron{this.Interactor, conn, clientCount, serverChannel, 0}
 		go electron.handleClient()
 	}
 }

@@ -1,0 +1,5 @@
+{"method":"join", "username":"ibrohim", "udp_address":"127.0.0.1", "udp_port":12350}
+{"method":"ready"}
+{"method":"client_address"}
+{"method":"leave"}
+{"method": "accepted_proposal", "kpu_id": 1, "Description": "Kpu is selected"}
