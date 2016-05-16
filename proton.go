@@ -5,7 +5,6 @@ import (
 	"math"
 	"strconv"
 	"strings"
-	"time"
 
 	"encoding/json"
 	"math/rand"
@@ -193,7 +192,6 @@ func (this *Proton) checkPlayerStates() {
 	}
 
 	if isEveryoneReady {
-		time.Sleep(666)
 		log.Println("Everyone is ready, game start!")
 		this.gameStart()
 	}
@@ -210,10 +208,13 @@ func (this *Proton) gameStart() {
 
 	i := 0
 
-	for _, username := range this.idUsername {
+	for _, client := range this.idConn {
+		username := this.idUsername[client.Id]
+
 		if perm[i] < werewolfCount {
 			werewolfUsernames = append(werewolfUsernames, username)
 		}
+
 		i++
 	}
 
@@ -246,6 +247,8 @@ func (this *Proton) gameStart() {
 }
 
 func (this *Proton) implClientAddress(current *Photon, _ map[string]interface{}) map[string]interface{} {
+	log.Println(strconv.Itoa(current.Electron.Id) + " requests for client_address")
+
 	res := map[string]interface{}{}
 
 	res["status"] = "ok"
